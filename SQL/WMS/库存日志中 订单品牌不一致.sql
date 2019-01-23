@@ -1,8 +1,9 @@
 --库存日志中，仓库管理加盟商id 与 订单加盟商id 不一致
-SELECT c.manage_brand_id,
-       d.brand_id,
-       a.inventory_from,
-       d.order_id,
+SELECT c.manage_brand_id 仓库管理加盟商id,
+       c.brand_id 仓库加盟商id,
+       d.brand_id 订单加盟商id,
+       a.inventory_from 库存id,
+       d.order_id 订单id,
        d.add_time
 FROM
 (
@@ -25,5 +26,5 @@ FROM
                  brand_id
     ) AS d
         ON d.order_id = a.bill_id
-WHERE c.manage_brand_id <> d.brand_id
+WHERE c.brand_id <> d.brand_id
 ORDER BY d.add_time DESC;
