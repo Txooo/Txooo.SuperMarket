@@ -1,5 +1,7 @@
+--清理数据
 TRUNCATE TABLE dbo.vmall_bill_summary_gs1_num;
 DECLARE @brand_id BIGINT = 497863;
+--插入数据
 INSERT INTO dbo.vmall_bill_summary_gs1_num
 (
     gs1_num,
@@ -10,6 +12,7 @@ INSERT INTO dbo.vmall_bill_summary_gs1_num
     rectify_count,
     order_count
 )
+--查询数据
 SELECT aa.gs1_num,
        bb.bill_count,
        aa.inventory_in,
@@ -18,7 +21,7 @@ SELECT aa.gs1_num,
        cc.rectify_count,
        dd.order_count
 FROM
-(
+( --库存数据
     SELECT SUM(a.inventory_in) inventory_in,
            SUM(a.inventory_out) inventory_out,
            SUM(a.inventory_keep) inventory_keep,
@@ -40,6 +43,7 @@ FROM
     WHERE g.brand_id = @brand_id
     GROUP BY g.gs1_num
 ) AS aa
+    --采购数据
     LEFT JOIN
     (
         SELECT gs1_num,
@@ -58,6 +62,7 @@ FROM
         GROUP BY gs1_num
     ) AS bb
         ON bb.gs1_num = aa.gs1_num
+    --盘点
     LEFT JOIN
     (
         SELECT SUM(a.goods_count) rectify_count,
@@ -82,6 +87,7 @@ FROM
         GROUP BY c.gs1_num
     ) AS cc
         ON cc.gs1_num = aa.gs1_num
+    --订单销售
     LEFT JOIN
     (
         SELECT gs1_num,
@@ -104,3 +110,8 @@ FROM
         GROUP BY g.gs1_num
     ) AS dd
         ON dd.gs1_num = aa.gs1_num;
+--查询有问题的商品
+SELECT *
+FROM dbo.vmall_bill_summary_gs1_num
+WHERE inventory_in <> (inventory_out + inventory_keep - rectify_count)
+      OR inventory_out <> order_count;
