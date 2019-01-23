@@ -1,3 +1,4 @@
+--库存日志中，仓库管理加盟商id 与 订单加盟商id 不一致
 SELECT c.manage_brand_id,
        d.brand_id,
        a.inventory_from,
