@@ -6,7 +6,8 @@ DECLARE @inventory_id BIGINT,
 DECLARE aa_list CURSOR FOR
 SELECT a.inventory_id,
        a.inventory_keep,
-       0 - (a.inventory_in - (a.inventory_keep + a.inventory_out - b.rectify_count)) inventory_count
+	   --当前库存+已消费-盘点-总采购 = 应盘点数
+       a.inventory_keep + a.inventory_out - b.rectify_count - a.inventory_in AS inventory_count
 FROM
 (
     SELECT inventory_id,
