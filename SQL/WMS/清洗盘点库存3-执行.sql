@@ -6,7 +6,7 @@ DECLARE @inventory_id BIGINT,
 DECLARE aa_list CURSOR FOR
 SELECT a.inventory_id,
        a.inventory_keep,
-       a.inventory_in - (a.inventory_keep + a.inventory_out - b.rectify_count)
+       0 - (a.inventory_in - (a.inventory_keep + a.inventory_out - b.rectify_count)) inventory_count
 FROM
 (
     SELECT inventory_id,
@@ -78,7 +78,7 @@ BEGIN
                           );
     SET @rectify_id = @@IDENTITY;
     UPDATE dbo.vmall_bill_rectify
-    SET bill_number = 'QX' + CAST(@rectify_id AS VARCHAR(50))
+    SET bill_number = 'JS' + CAST(@rectify_id AS VARCHAR(50))
     WHERE bill_id = @rectify_id;
 
     INSERT INTO dbo.vmall_bill_rectify_detail
@@ -90,7 +90,7 @@ BEGIN
         goods_remark
     )
     VALUES
-    (@rectify_id, @inventory_id, @inventory_count, GETDATE(), '库存结算');
+    (@rectify_id, @inventory_id, @inventory_count, GETDATE(), '系统结算');
 
     INSERT INTO dbo.vmall_bill_rectify_log
     (
@@ -101,11 +101,11 @@ BEGIN
         add_time
     )
     VALUES
-    (   @rectify_id,   -- bill_id - bigint
-        2,             -- bill_status - int
-        0,             -- user_id - bigint
-        N'系统清洗错误结算数据', -- log_msg - nvarchar(500)
-        GETDATE()      -- add_time - datetime
+    (   @rectify_id, -- bill_id - bigint
+        2,           -- bill_status - int
+        0,           -- user_id - bigint
+        N'系统结算',     -- log_msg - nvarchar(500)
+        GETDATE()    -- add_time - datetime
     );
     INSERT INTO dbo.vmall_bill_warehouse_inventory_log
     (
@@ -127,8 +127,8 @@ BEGIN
         @rectify_id,
         @inventory_keep,
         @inventory_keep,
-        N'系统库存清洗', -- remark - nvarchar(500)
-        GETDATE()  -- add_time - datetime
+        N'系统结算',  -- remark - nvarchar(500)
+        GETDATE() -- add_time - datetime
     );
 
     FETCH NEXT FROM aa_list
