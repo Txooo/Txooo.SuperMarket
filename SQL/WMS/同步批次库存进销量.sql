@@ -24,10 +24,10 @@ WHERE wi.inventory_in <> ISNULL(ss2.goods_count,0);
 
 --同步库存销售数量
 UPDATE dbo.vmall_bill_warehouse_inventory
-SET inventory_out = wil.goods_count
---SELECT wil.*,wi.inventory_out 
+SET inventory_out = ISNULL(wil.goods_count,0)
+--SELECT wi.inventory_out ,wil.*
 FROM dbo.vmall_bill_warehouse_inventory AS wi
-    INNER JOIN
+    LEFT JOIN
     (
         SELECT SUM(   CASE inventory_type
                           WHEN 12 THEN
@@ -42,4 +42,4 @@ FROM dbo.vmall_bill_warehouse_inventory AS wi
         GROUP BY inventory_from
     ) wil
         ON wi.inventory_id = wil.inventory_from
-WHERE wi.inventory_out <> wil.goods_count;
+WHERE wi.inventory_out <> ISNULL(wil.goods_count,0);
