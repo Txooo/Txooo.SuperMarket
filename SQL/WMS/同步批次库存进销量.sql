@@ -1,9 +1,9 @@
 --同步库存采购数量
 UPDATE dbo.vmall_bill_warehouse_inventory
-SET inventory_in = ss2.goods_count
---SELECT wi.inventory_id,ss2.* 
+SET inventory_in = ISNULL(ss2.goods_count,0)
+--SELECT wi.inventory_id,wi.inventory_in,ss2.* 
 FROM dbo.vmall_bill_warehouse_inventory AS wi
-    INNER JOIN
+    LEFT JOIN
     (
         SELECT s.into_warehouse_id,
                SUM(sid2.goods_count) goods_count,
@@ -20,7 +20,7 @@ FROM dbo.vmall_bill_warehouse_inventory AS wi
     ) AS ss2
         ON ss2.batch_id = wi.batch_id
            AND wi.warehouse_id = ss2.into_warehouse_id
-WHERE wi.inventory_in <> ss2.goods_count;
+WHERE wi.inventory_in <> ISNULL(ss2.goods_count,0);
 
 --同步库存销售数量
 UPDATE dbo.vmall_bill_warehouse_inventory
