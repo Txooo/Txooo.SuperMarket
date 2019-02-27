@@ -1,3 +1,4 @@
+
 --清理数据
 TRUNCATE TABLE dbo.vmall_bill_summary_gs1_num;
 DECLARE @brand_id BIGINT = 497863;
@@ -19,7 +20,7 @@ SELECT aa.gs1_num,
        aa.inventory_out,
        aa.inventory_keep,
        cc.rectify_count,
-       dd.order_count
+       dd.goods_count
 FROM
 ( --库存数据
     SELECT SUM(a.inventory_in) inventory_in,
@@ -90,24 +91,27 @@ FROM
     --订单销售
     LEFT JOIN
     (
-        SELECT gs1_num,
-               SUM(m.goods_count) order_count
+        SELECT c.gs1_num,
+               SUM(a.goods_count) goods_count
         FROM
         (
-            SELECT goods_id,
-                   goods_count
-            FROM dbo.vmall_order_goods_map
-            WHERE brand_id = @brand_id
-                  AND order_id IN (
-                                      SELECT order_id
-                                      FROM dbo.vmall_order
-                                      WHERE pay_state = 1
-                                            AND order_state > 0
-                                  )
-        ) AS m
-            LEFT JOIN dbo.vmall_goods AS g
-                ON g.goods_id = m.goods_id
-        GROUP BY g.gs1_num
+            SELECT SUM(   CASE inventory_type
+                              WHEN 12 THEN
+                                  -goods_count
+                              ELSE
+                                  goods_count
+                          END
+                      ) goods_count,
+                   inventory_from
+            FROM dbo.vmall_bill_warehouse_inventory_log
+            WHERE inventory_type IN ( 11, 12 )
+            GROUP BY inventory_from
+        ) AS a
+            LEFT JOIN dbo.vmall_bill_warehouse_inventory AS b
+                ON a.inventory_from = b.inventory_id
+            LEFT JOIN dbo.vmall_bill_batch AS c
+                ON b.batch_id = c.batch_id AND c.brand_id=@brand_id
+        GROUP BY c.gs1_num
     ) AS dd
         ON dd.gs1_num = aa.gs1_num;
 --查询有问题的商品
