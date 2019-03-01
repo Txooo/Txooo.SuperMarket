@@ -40,7 +40,10 @@ FROM [TxoooBrandShop].dbo.vmall_user AS b
 WHERE NOT EXISTS
 (
     SELECT 1 FROM dbo.gzy_user_third AS a WHERE a.old_user_id = b.user_id
-);
+)
+      AND b.brand_id IN (
+                            SELECT brand_id FROM dbo.vmall_index WHERE is_open = 3
+                        );
 
 --导入会员基本信息
 INSERT INTO dbo.gzy_user_member
@@ -78,4 +81,7 @@ FROM [TxoooBrandShop].dbo.vmall_user_assets AS b
 WHERE NOT EXISTS
 (
     SELECT 1 FROM dbo.gzy_user_member AS a WHERE a.old_member_id = b.member_id
-);
+)
+      AND b.brand_id IN (
+                            SELECT brand_id FROM dbo.vmall_index WHERE is_open = 3
+                        );
