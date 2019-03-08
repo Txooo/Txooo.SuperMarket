@@ -19,7 +19,8 @@ SET user_id = b.user_id,
 FROM dbo.gzy_user_member AS a
     LEFT JOIN dbo.gzy_user_third AS b
         ON a.mobile = b.mobile
-           AND a.brand_id = b.brand_id;
+           AND a.brand_id = b.brand_id
+WHERE b.user_id IS NOT NULL;
 
 --更新第三方会员
 UPDATE dbo.gzy_user_third
