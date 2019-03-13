@@ -1,6 +1,8 @@
 --导入第三方基本信息
+SET IDENTITY_INSERT dbo.gzy_user_third ON;
 INSERT INTO dbo.gzy_user_third
 (
+    third_user_id,
     third_type,
     third_id,
     nickname,
@@ -13,7 +15,8 @@ INSERT INTO dbo.gzy_user_third
     member_id,
     old_user_id
 )
-SELECT CASE third_type
+SELECT b.user_id,
+       CASE third_type
            WHEN 0 THEN
                1
            WHEN 1 THEN
@@ -42,12 +45,15 @@ WHERE NOT EXISTS
     SELECT 1 FROM dbo.gzy_user_third AS a WHERE a.old_user_id = b.user_id
 )
       AND b.brand_id IN (
-                            SELECT brand_id FROM dbo.vmall_index WHERE is_open = 3
+                            SELECT brand_id FROM [TxoooBrandShop].dbo.vmall_index WHERE is_open = 3
                         );
+SET IDENTITY_INSERT dbo.gzy_user_third OFF;
 
+SET IDENTITY_INSERT dbo.gzy_user_member ON;
 --导入会员基本信息
 INSERT INTO dbo.gzy_user_member
 (
+    member_id,
     brand_id,
     com_id,
     user_id,
@@ -63,7 +69,8 @@ INSERT INTO dbo.gzy_user_member
     level,
     old_member_id
 )
-SELECT brand_id,
+SELECT b.member_id,
+       brand_id,
        com_id,
        0,
        member_mobile,
@@ -83,5 +90,6 @@ WHERE NOT EXISTS
     SELECT 1 FROM dbo.gzy_user_member AS a WHERE a.old_member_id = b.member_id
 )
       AND b.brand_id IN (
-                            SELECT brand_id FROM dbo.vmall_index WHERE is_open = 3
+                            SELECT brand_id FROM [TxoooBrandShop].dbo.vmall_index WHERE is_open = 3
                         );
+SET IDENTITY_INSERT dbo.gzy_user_member OFF;
