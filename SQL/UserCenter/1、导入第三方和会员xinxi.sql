@@ -37,7 +37,7 @@ SELECT b.user_id,
        END,
        add_time,
        0,
-       0,
+       b.member_id,
        user_id
 FROM [TxoooBrandShop].dbo.vmall_user AS b
 WHERE NOT EXISTS
