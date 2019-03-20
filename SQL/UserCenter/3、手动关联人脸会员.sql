@@ -3,14 +3,17 @@ UPDATE [dbo].[gzy_user_third]
 SET user_id = b.new_face_id
 FROM dbo.gzy_user_third AS a
     LEFT JOIN dbo.face_user_map AS b
-        ON b.old_user_id = a.old_user_id;
+        ON b.old_user_id = a.old_user_id
+WHERE a.user_id = 0;
 
 --更新第三方企业
 UPDATE dbo.gzy_user_third
 SET com_id = b.com_id
 FROM dbo.gzy_user_third AS a
     LEFT JOIN TxoooBrands.dbo.brand_index AS b
-        ON a.brand_id = b.brand_id;
+        ON a.brand_id = b.brand_id
+WHERE a.com_id = 0;
+
 
 ----更新会员人脸和企业
 --UPDATE dbo.gzy_user_member
