@@ -1,5 +1,4 @@
 --导入第三方基本信息
-SET IDENTITY_INSERT dbo.gzy_user_third ON;
 INSERT INTO dbo.gzy_user_third
 (
     third_user_id,
@@ -23,6 +22,8 @@ SELECT b.user_id,
                5
            WHEN 2 THEN
                6
+           WHEN 99 THEN
+               8
        END,
        open_id,
        nickname,
@@ -42,12 +43,11 @@ SELECT b.user_id,
 FROM [TxoooBrandShop].dbo.vmall_user AS b
 WHERE NOT EXISTS
 (
-    SELECT 1 FROM dbo.gzy_user_third AS a WHERE a.old_user_id = b.user_id
+    SELECT 1 FROM dbo.gzy_user_third AS a WHERE a.third_user_id = b.user_id
 )
       AND b.brand_id IN (
                             SELECT brand_id FROM [TxoooBrandShop].dbo.vmall_index WHERE is_open = 3
                         );
-SET IDENTITY_INSERT dbo.gzy_user_third OFF;
 
 --SET IDENTITY_INSERT dbo.gzy_user_member ON;
 ----导入会员基本信息
